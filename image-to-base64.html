@@ -1,0 +1,93 @@
+<html>
+<head>
+<title>Image to Base64</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<center>
+<h1>Image to Base64</h1>
+<hr>
+<div class="main" id="input">
+<input id="inp" type='file'><br>
+<br>
+<button onclick="copyData()">copy data</button>
+<button onclick="generateHtmlTag(); copyTag()">copy HTML tag</button>
+<button onclick="generateMdTag(); copyTag()">copy MD tag</button>  
+<br><br>
+<table>
+<thead>
+<tr>
+<th>
+<textarea readonly placeholder="Base64 data. Pro tip: past clipboard image between the two lines." id="b64" rows="6"></textarea>
+</th>
+<th>
+<textarea readonly placeholder="HTML/MD image tag" id="tag" rows="6"></textarea>
+</th>
+</tr>
+</thead>
+</table>
+<br>
+<img id="img" style="max-height:150px; max-width:70%">
+<script>
+function readFile() {
+  if (this.files && this.files[0]) {
+    var FR= new FileReader();
+    FR.addEventListener("load", function(e) {
+      document.getElementById("b64").innerHTML = e.target.result;
+      document.getElementById("img").src = document.getElementById("b64").value;
+    }); 
+    FR.readAsDataURL( this.files[0] );
+  }
+}
+document.getElementById("inp").addEventListener("change", readFile);
+
+function copyData() {
+          var copyText = document.getElementById("b64");
+          copyText.select();
+          copyText.setSelectionRange(0, 9999999999)
+          document.execCommand("copy");
+}
+
+function generateHtmlTag() {
+document.getElementById("tag").innerHTML = "<img src='" + document.getElementById('b64').value + "'/>";
+}
+function generateMdTag() {
+document.getElementById("tag").innerHTML = "![](" + document.getElementById('b64').value + ")";
+}
+
+function copyTag() {
+          var copyText = document.getElementById("tag");
+          copyText.select();
+          copyText.setSelectionRange(0, 9999999999)
+          document.execCommand("copy");
+}
+
+
+// copy and paste image
+
+ $(document).ready(function() {
+  $('#input').on('paste', function(e) {
+    var orgEvent = e.originalEvent;
+    for (var i = 0; i < orgEvent.clipboardData.items.length; i++) {
+      if (orgEvent.clipboardData.items[i].kind == "file" && orgEvent.clipboardData.items[i].type == "image/png") {
+        var imageFile = orgEvent.clipboardData.items[i].getAsFile();
+        var fileReader = new FileReader();
+        fileReader.onloadend = function() {
+          $('#b64').html(fileReader.result);
+          document.getElementById("img").src = document.getElementById("b64").value;
+        }
+        fileReader.readAsDataURL(imageFile);
+        break;
+      }
+    }
+  });
+});
+</script>
+</div>
+<hr>
+
+</center>
+</body>
+</html>
